@@ -2,122 +2,518 @@
 layout: default
 ---
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+# 目次
 
-[Link to another page](./another-page.html).
-
-There should be whitespace between paragraphs.
-
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
-
-# Header 1
-
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
-
-## Header 2
-
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
-
-### Header 3
-
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
-
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
-```
-
-#### Header 4
-
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-
-##### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://assets-cdn.github.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
+**まだ**
 
 
-### Definition lists can be used with HTML syntax.
+---
 
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
+
+
+
+# パート
+
+以下に説明のないパート指定が行頭にあった場合、その行は無視される。
+
+## トラック指定パート
+
+行頭に **0A-0P**,**1A-1P**,**2A-2P**,**3A-3P** を記述することで、テンポを指定する。
+
+**0A-0P**に限り、先頭の数値を省略できる(**A-P**)。
+
+
+
+## テンポ指定パート
+
+曲のテンポおよび全音符長(分解能)を指定する。
+
+行頭に**T**をつける。
+
+### 文法
+
+**T***テンポ*,*全音符の長さ*
+
+
+
+
+## 音色定義パート
+
+音色ファイルの割り当てを設定する。
+
+行頭に**V**をつける。
+
+### 文法
+
+**V** *音色番号*,*ファイル名*\(*キーコード*\)
+
+
+
+
+## マクロ定義
+
+曲中で使用するマクロを定義する。
+
+行頭に**$**をつける。
+
+### 文法
+
+**$***英字* *\(マクロ展開したい文字列\)*
+
+
+
+## タイトル設定
+
+曲のタイトルを定義する。
+
+行頭に**!**をつける。
+
+### 文法
+
+**!** *曲のタイトル*
+
+
+
+## 使用済みパート割り当て
+
+これまでに使用したことのあるパートに、トラック割り当てを行う。
+
+### 文法
 
 ```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
+ABC ccc
+DEF eee
+GH  ggg
+
+?   r
 ```
 
+この場合、5行目の**?**のトラックの割り当ては、*ABCDEFGH*になる。
+
+
+
+---
+
+
+
+# MMLシーケンス
+
+## 音符
+
+### 音符記号
+
+音符は、アルファベットの**a**～**g**で表現する。
+
+c=**ド**、d=**レ**、e=**ミ**、f=**ファ**、g=**ソ**、a=**ラ**、b=**シ**
+
+半音上げたい(＃ : シャープ をつける)場合は**+**を、半音下げたい(♭ : フラット をつける)場合は**-**を音の直後につける。
+
 ```
-The final element.
+a+    <- ラの＃
+e-    <- ミの♭
+e+    <- ミの＃、つまりファ
 ```
+
+休符は、**r**を使う。
+
+
+### 音の長さ
+
+音の長さは、音符または休符の後に「～分音符」という形で指定する。
+
+```
+c2    <- ドの２分音符
+d+8   <- レ＃の８分音符
+```
+
+この音の長さは、全音符の約数でのみ指定が可能で、約数ではない数値を使うと音の長さが中途半端になってしまう。
+
+音の長さを省略したときは、後述の**l**コマンドで指定した基本長が採用される。
+
+#### タイ
+
+**^**でタイ(同じ高さの音を連結)を表現する。
+
+**c2^16**は、２分音符＋１６分音符の長さのド になる。
+
+#### 付点
+
+音の長さに続けて、**.**(ドット)を入力すると、付点を表現できる。
+
+付点をつけると、音の長さは、付点の前に指定した音の長さ＋付点の前に指定した音の長さの半分 になる。
+
+この付点は、２つまでつけることができる。３つ以上つけたときの動作は定義されていない。
+
+
+#### 特殊な表現
+
+```
+c2-16
+```
+
+これは、２分音符から16分音符の長さを引いた長さになる。
+
+```
+c~24
+```
+
+チルダ(**~**)記号は、音の長さを「～分音符」の形ではなく、ステップ数で表現する。
+
+
+```
+r2'
+```
+
+シングルクォートは、前の音の長さの1/4を表現する。
+
+上記例の場合、音の長さは、２分音符＋８分音符 の長さになす。
+
+
+```
+c4,3
+```
+
+音量を一時的に変更する。音量は相対値でのみ指定ができる。
+
+上記例は、MML2MIDの `)3 c4 (3` (一時的に音量を３上げて発音、元に戻す) に相当する。
+
+
+## 繰り返し
+
+範囲内を繰り返し演奏する。
+
+### 文法
+
+**[** ～ **]***n*
+
+また、**:**(コロン)を入れることで、最後のループの際にループを抜けること(ループアウト)がができる。
+
+
+例
+
+```
+[cde]3    <- cde cde cde (カッコ内を３回演奏)
+[abc:r]4  <- abcr abcr abcr abc
+```
+
+
+
+
+## 簡易コール
+
+３つのコマンドで、チャンネル内簡易コールを行う。
+
+|コマンド|役割                 |
+|:------:|:--------------------|
+|   S    |簡易コール先頭宣言   |
+|   T    |簡易コールのリターン |
+|   U    |簡易コール           |
+
+**U**コマンドにより、**S**・**T**コマンドの間を演奏する。
+**S**および**T**コマンドは、**U**コマンドより前に置かなければならない。
+
+ループとの併用をする際は、SとTをループの内外に分けないよう注意すること。
+
+### 例
+
+```
+S cdef T g4g4 U     <-- cdef g4g4 cdef と演奏する
+```
+
+### 誤用例
+
+```
+S [cdef T g]2       <-- ***コンパイルエラー***
+```
+
+
+
+## ループポイント
+
+最後まで演奏した後、**L**があるところから再スタートする。
+
+**L**がない場合、そのトラックの演奏は終了する。
+
+
+
+
+## 音の基本長の設定
+
+**l**コマンドを使うと、音符の音の長さを省略した際のデフォルトの音の長さを定義できる。
+
+これは、特にベースパート等で文字量を減らす際に役立つ。
+
+音の長さの指定方法は、音符と同じ。
+
+音の長さが255を超えるとエラーになる。初期値は４分音符。
+
+
+
+## スラー
+
+**&**コマンドを使うと、前後の音を滑らかにつなげることができる。
+前後の音の高さが同じ場合、タイと同様の動作になる。
+
+このコマンドは、音符の直後に入れなくてはならない。
+
+### 例
+
+```
+a4&b4    <- 前後の音をつなげる
+a4)&b4   <- ***音符の直後にない為、エラー***
+a4&)b4   <- これはＯＫ
+```
+
+
+## 音色変更
+
+音色を変更する。
+
+音色は事前に**V**パートで定義されていなくてはならない。
+
+また、音色番号は0～255の範囲で設定する。
+
+演奏開始時の初期値は0。
+
+### 文法
+
+**@***音色番号*
+
+
+
+
+## 音量指定
+
+音量を変更する。数値が大きいほど、音量が大きくなる。
+
+0～135の範囲で指定する。だいたい100～130あたりで使うのが良いとのこと。
+
+### 文法
+
+**v***音量*
+
+
+
+
+## 相対音量指定
+
+以後の音量を、現在の音量からの相対値で変更する。
+
+### 文法
+
+#### 音量アップ
+
+**)***音量*
+
+#### 音量ダウン
+
+**(***音量*
+
+
+## 音量基準値設定
+
+このコマンド以後のv命令は、全てnを加えた値になる。
+
+曲完成後の微調整に向いている。
+
+### 文法
+
+**?***音量*
+
+音量は、-127～127の範囲で設定可能。
+
+
+
+## オクターブ指定
+
+オクターブを指定する。初期値は４。
+
+指定可能範囲は１～８。
+
+### 文法
+
+**o***オクターブ*
+
+
+
+
+
+## 相対オクターブ指定
+
+オクターブを相対的に上げたり下げたりする。
+
+### 例
+
+```
+>       ** １オクターブアップ
+<       ** １オクターブダウン
+```
+
+
+## 負方向へのオクターブずれ指定
+
+指定した分だけオクターブを下げる。
+
+初期値は０。指定可能範囲は０～４。
+
+### 文法
+
+**O***オクターブ*
+
+
+
+
+
+
+## パンポット指定
+
+
+
+## 相対パンポット指定
+
+
+
+
+## 転調指定
+
+
+
+
+## 相対転調指定
+
+
+
+
+## テンポ設定
+
+
+
+
+## デチューン設定
+
+
+
+
+## ゲートタイム設定(減算式)
+
+
+
+
+## ゲートタイム設定(乗算式)
+
+
+
+
+## ビブラート設定
+
+
+
+
+
+## ポルタメント設定
+
+
+
+
+## エンベロープ設定
+
+
+
+
+## 音色別エンベロープ形状指定
+
+
+
+
+## 音量フェード
+
+
+
+
+## アタックエンベロープ設定
+
+
+
+
+## アタック省略フラグ設定
+
+
+
+
+## 演奏スイッチ切り替え
+
+
+
+
+## パート別注釈文設定
+
+
+
+
+## チャンネル間同期信号
+
+
+
+
+## 音程の直接指定
+
+
+
+
+## 鍵盤演奏時の鍵盤指定
+
+
+
+
+## 鍵盤演奏時の鍵盤横メッセージ指定
+
+
+
+
+## エフェクトグループ指定
+
+
+
+
+## リバーブ指定
+
+
+
+
+## コーラス・ステレオ設定
+
+
+
+
+## 新リバーブ設定
+
+
+
+## 新リバーブ・センド量設定
+
+
+
+
+## 新リバーブ有効時相対音量設定
+
+
+
+
+## 交互発音モード設定
+
+
+
+
+## パンキーフォロー設定
+
+
+
+
+
+## 調号
+
+
+
+
+
+
